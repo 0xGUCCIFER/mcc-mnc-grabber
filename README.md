@@ -13,3 +13,14 @@ The host provides information about Mobile Network Operators (MNOs). However, th
 
 ## .env
 - DATABASE_URL="dbtype://user:password@host/db?schema=public"
+
+## Chrome driver
+- https://developer.chrome.com/docs/chromedriver/downloads/
+
+## Firefox Gecko driver
+- https://github.com/mozilla/geckodriver/releases
+
+## Useful links
+- https://mcc-mnc.com/
+- https://www.selenium.dev/documentation/webdriver/
+- https://www.selenium.dev/documentation/webdriver/drivers/
