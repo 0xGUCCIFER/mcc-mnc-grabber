@@ -1,0 +1,189 @@
+generator client {
+  provider = "prisma-client-py"
+  output   = "prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id            String         @id @default(uuid())
+  name          String
+  createdAt     DateTime       @default(now())
+  credits       Int            @default(0)
+  tag           String         @default("-")
+  cloudSettings CloudSettings? @relation("CloudSettingsToCompany")
+  devices       Device[]
+  plan          Plan?          @relation("CompanyToPlan")
+  transactions  Transaction[]
+  users         User[]
+}
+
+model Plan {
+  id                 String  @id @default(uuid())
+  companyId          String  @unique @default("-")
+  seats              Int     @default(1)
+  startedWithCredits Int     @default(100)
+  startedWithSeats   Int     @default(1)
+  company            Company @relation("CompanyToPlan", fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model CloudSettings {
+  id                        String  @id @default(uuid())
+  companyId                 String  @unique
+  testingCompetitionFeature Boolean @default(false)
+  company                   Company @relation("CloudSettingsToCompany", fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  name          String
+  companyId     String
+  createdAt     DateTime       @default(now())
+  image         String?
+  userRole      UserRole       @default(TESTER)
+  tag           String?
+  cloudSessions CloudSession[]
+  sessions      Session[]
+  testResults   TestResult[]
+  transactions  Transaction[]
+  company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model Device {
+  id          String       @id @default(uuid())
+  imei        String
+  companyId   String
+  model       String       @default("-")
+  createdAt   DateTime     @default(now())
+  brand       String       @default("-")
+  code        String       @default("-")
+  simSlots    Int          @default(1)
+  batteryTech String       @default("-")
+  cpu         String       @default("-")
+  voltage     String       @default("-")
+  serial      String       @default("-")
+  mAh         String       @default("-")
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  testResults TestResult[]
+
+  @@unique([imei, companyId])
+}
+
+model TestResult {
+  id               String       @id @default(uuid())
+  result           String
+  testerId         String       @default("-")
+  deviceId         String       @default("-")
+  status           Boolean      @default(false)
+  time             DateTime     @default(now())
+  batteryLife      String       @default("-")
+  cycleCount       Int          @default(0)
+  frp              Boolean      @default(false)
+  imei             String       @default("-")
+  knox             Boolean      @default(false)
+  mdm              Boolean      @default(false)
+  osVersion        String       @default("-")
+  serial           String       @default("-")
+  uid              String       @default(uuid())
+  grade            String       @default("A")
+  carrier          String       @default("-")
+  storage          String       @default("-")
+  modelName        String       @default("-")
+  frontCameraImage String?
+  rearCameraImage  String?
+  telephotoImage   String?
+  ultrawideImage   String?
+  ram              String       @default("-")
+  certificate      Certificate? @relation("CertificateToTestResult")
+  device           Device       @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  tester           User         @relation(fields: [testerId], references: [id], onDelete: SetDefault)
+}
+
+model Certificate {
+  id           String     @id @default(uuid())
+  testResultId String     @unique
+  expiration   DateTime?  @default(dbgenerated("(now() + '1 year'::interval)"))
+  createdAt    DateTime?  @default(now())
+  testResult   TestResult @relation("CertificateToTestResult", fields: [testResultId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model CloudSession {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Transaction {
+  id           String            @id @default(uuid())
+  companyId    String
+  imei         String?
+  createdAt    DateTime          @default(now())
+  amount       Int               @default(0)
+  balanceAfter Int
+  description  String?
+  processedAt  DateTime?
+  reason       TransactionReason @default(UNKNOWN)
+  reference    String            @unique @default(uuid())
+  status       TransactionStatus @default(COMPLETED)
+  type         TransactionType   @default(DEBIT)
+  userId       String
+  company      Company           @relation(fields: [companyId], references: [id])
+  user         User              @relation(fields: [userId], references: [id])
+}
+
+model MobileNetworks {
+  id          String @id @default(uuid())
+  mcc         String @default("-")
+  mnc         String @default("-")
+  network     String @default("-")
+  iso         String @default("-")
+  country     String @default("-")
+  countryCode String @default("-")
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+}
+
+enum TransactionReason {
+  PURCHASE
+  DEVICE_TEST
+  REFUND
+  ADJUSTMENT
+  PROMOTION
+  TRANSFER
+  UNKNOWN
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REVERSED
+}
+
+enum UserRole {
+  ULTRA
+  SUPPORT
+  ADMIN
+  TESTER
+  TECHNICIAN
+}
