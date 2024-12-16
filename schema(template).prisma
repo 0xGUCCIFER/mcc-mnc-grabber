@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client-py"
+  output   = "prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model MobileNetworks {
+  id          String @id @default(uuid())
+  mcc         String @default("-")
+  mnc         String @default("-")
+  network     String @default("-")
+  iso         String @default("-")
+  country     String @default("-")
+  countryCode String @default("-")
+}
