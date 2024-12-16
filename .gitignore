@@ -1,3 +1,4 @@
 .env*
 /schema.prisma
 /prisma/
+/mcc-mnc.zip
