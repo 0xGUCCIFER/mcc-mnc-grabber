@@ -1,4 +1,5 @@
 .env*
-/schema.prisma
+schema.prisma
 /prisma/
-/mcc-mnc.zip
+mcc-mnc.zip
+.DS_Store
