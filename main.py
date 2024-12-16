@@ -9,7 +9,6 @@ from prisma import Prisma
 from prisma.models import MCC_MNC
 import scraper
 
-# Haupt-Event-Loop
 async def main():
     scrape = scraper.Scraper()
     await scrape.connectPrisma()
@@ -20,25 +19,3 @@ async def main():
 
 if __name__ == '__main__':
     asyncio.run(main())
-
-"""
-model MCC_MNC {
-  id            String      @id @default(uuid())
-  mcc           String      @default("-")
-  mnc           String      @default("-")
-  network       String      @default("-")
-  iso           String      @default("-")
-  country       String      @default("-")
-  countryCode   String      @default("-")
-}
-"""
-
-"""
-Test Data
-"mcc": "202",
-"mnc": "299",
-"network": "AMD Telecom",
-"iso": "gr",
-"country": "Greece",
-"countryCode": "30"
-"""

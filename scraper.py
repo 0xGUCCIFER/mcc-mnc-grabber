@@ -102,7 +102,6 @@ class Scraper:
     async def disconnectPrisma(self) -> None:
         await self.prisma.disconnect()
 
-# Haupt-Event-Loop
 async def main():
     scraper = Scraper()
     await scraper.connectPrisma()
