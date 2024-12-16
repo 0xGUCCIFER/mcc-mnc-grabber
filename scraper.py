@@ -1,12 +1,9 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.common.by import By
-from bs4 import BeautifulSoup
 import requests
 import asyncio
+from selenium import webdriver
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.by import By
 from prisma import Prisma
 from prisma.models import MobileNetworks
 
@@ -25,9 +22,7 @@ class Scraper:
         select = self.browser.find_element(By.NAME, "mncmccTable_length")
         select = Select(select)
         select.select_by_visible_text('100')
-
         rows = self.browser.find_elements(By.TAG_NAME, "tr")
-
         for row in rows:
             columns = row.find_elements(By.TAG_NAME, "td")
             mcc = None
@@ -54,14 +49,12 @@ class Scraper:
                 await self.store(mcc, mnc, network, iso, country, countryCode)
             else:
                 continue
-
         WebDriverWait(self.browser, self.scroll_pause_time)
-
         nextButton = self.browser.find_element(By.ID, "mncmccTable_next")
         nextButton.click()
         await self.page()
 
-    async def store(self, mcc, mnc, network, iso, country, countryCode) -> None:
+    async def store(self, mcc: str, mnc: str, network: str, iso: str, country: str, countryCode: str) -> None:
         if mcc == None:
             return
         await self.prisma.mobilenetworks.create(
@@ -76,8 +69,8 @@ class Scraper:
         )
         print("[Network: {}, Tag: {}{}]".format(network, mcc, mnc))
 
-    async def exists(self, mcc, mnc, network, iso, country, countryCode) -> None:
-        if mcc != "" and mcc != None and mnc != "" and mnc != None and network != "" and network != None and iso != "" and iso != None and country != "" and country != None and countryCode != "" and countryCode != None:
+    async def exists(self, mcc: str, mnc: str, network: str, iso: str, country: str, countryCode: str) -> bool:
+        if mcc != "" and mcc != None and mnc != "" and mnc != None:
             search = await self.prisma.mobilenetworks.find_first(
                 where={
                     "mcc": str(mcc),
@@ -102,7 +95,7 @@ class Scraper:
     async def disconnectPrisma(self) -> None:
         await self.prisma.disconnect()
 
-async def main():
+async def main() -> None:
     scraper = Scraper()
     await scraper.connectPrisma()
     try:
