@@ -5,7 +5,8 @@ The scraper is designed to extract Mobile Country Code (MCC) and Mobile Network 
 <br/><br/>
 The host provides information about Mobile Network Operators (MNOs). However, there seems to be a discrepancy: while the site claims to list 3,115 operators, only 3,078 are actually extracted. This might be due to how the data is structured in the HTML table.
 
-![Alt text](images/table.png)
+![Alt text](images/table1.png)
+![Alt text](images/table2.png)
 
 ## Prisma Model
 ![Alt text](images/prismaModel.png)
