@@ -1,3 +1,4 @@
+import os
 import requests
 import asyncio
 from selenium import webdriver
@@ -48,11 +49,14 @@ class Scraper:
             if exists == False:
                 await self.store(mcc, mnc, network, iso, country, countryCode)
             else:
+                if mcc == None:
+                    continue
+                print("[Network: {}, Tag: {}{}] already exists".format(network, mcc, mnc))
                 continue
         WebDriverWait(self.browser, self.scroll_pause_time)
         nextButton = self.browser.find_element(By.ID, "mncmccTable_next")
         nextButton.click()
-        await self.page()
+        self.current_page += 1
 
     async def store(self, mcc: str, mnc: str, network: str, iso: str, country: str, countryCode: str) -> None:
         if mcc == None:
@@ -99,8 +103,20 @@ async def main() -> None:
     scraper = Scraper()
     await scraper.connectPrisma()
     try:
-        await scraper.page()
+        while scraper.current_page <= scraper.last_page:
+            if scraper.current_page == scraper.last_page+1:
+                break;
+            await scraper.page()
     finally:
         await scraper.disconnectPrisma()
 
 asyncio.run(main())
+
+"""
+                if self.current_page == self.last_page:
+            await self.page()
+            os._exit(0)
+        else:
+            self.current_page += 1
+            await self.page()
+"""
