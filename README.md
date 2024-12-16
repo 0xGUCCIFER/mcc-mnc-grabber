@@ -7,4 +7,4 @@ Python web scraper using Selenium to extract Mobile Network Codes (MNCs) and Mob
 ![Alt text](images/prismaModel.png)
 
 ## .env
-- DATABASE_URL="type://user:password@host/db?schema=public"
+- DATABASE_URL="dbtype://user:password@host/db?schema=public"
