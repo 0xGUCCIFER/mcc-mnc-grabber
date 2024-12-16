@@ -1,5 +1,6 @@
 .env*
 schema.prisma
 /prisma/
+/node_modules/
 mcc-mnc.zip
 .DS_Store
