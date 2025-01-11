@@ -12,7 +12,7 @@ The host provides information about Mobile Network Operators (MNOs). However, th
 ![Alt text](images/prismaModel.png)
 
 ## .env
-- DATABASE_URL="dbtype://user:password@host/db?schema=public"
+- DATABASE_URL="dbtype://user:password@host/db"
 
 ## Chrome driver
 - https://developer.chrome.com/docs/chromedriver/downloads/
